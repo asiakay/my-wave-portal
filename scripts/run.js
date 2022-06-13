@@ -7,34 +7,37 @@ const main = async () => {
   /* says, "go and deploy my contract and fund it with 0.1 ETH" */
   });
   // creating a local Ethereum network for this contract
-
   await waveContract.deployed();
-  console.log("Contract addy:", waveContract.address);
+  console.log("Contract deployed to:", waveContract.address);
   // the address contract is deployed to
   // console.log("Contract deplyoyed by:", owner.address);
   // the address of the person deploying our contract
 
   let contractBalance = await hre.ethers.provider.getBalance(
-  // Getting Contract balance 
-  waveContract.address
-  );
-  console.log(
-    "Contract balance:",
-    hre.ethers.utils.formatEther(contractBalance)
-  /* testing to see if the contract has a balance of 0.1. 
-  and that when we call wave(), 0.0001 ETH is removed from the contract */
-  );
+    // Getting Contract balance 
+    waveContract.address
+    );
+    console.log(
+      "Contract balance:",
+      hre.ethers.utils.formatEther(contractBalance)
+    /* testing to see if the contract has a balance of 0.1. 
+    So that when we call wave(), 0.0001 ETH is removed from the contract */
+    );
 
-  /*
-   * Let's try two waves now
-   */
+
+   // doing wave 1
   const waveTxn = await waveContract.wave("This is wave #1");
-  // doing wave 1
-  await waveTxn.wait();
+  await waveTxn.wait(); // waiting for transaction to be mined
+  waveTxn.wait();
 
-  const waveTxn2 = await waveContract.wave("This is wave #2");
+  const [_, randomPerson] = await hre.ethers.getSigners();
+
   // doing wave 2
-  await waveTxn2.wait();
+  const waveTxn2 = await waveContract.connect(randomPerson).wave("This is wave #2");
+  await waveTxn2.wait(); // waiting for 2nd transaction to be mined
+  waveTxn2.wait();
+
+
 
   contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
   console.log(
