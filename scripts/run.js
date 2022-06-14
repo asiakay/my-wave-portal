@@ -8,7 +8,7 @@ const main = async () => {
   });
   // creating a local Ethereum network for this contract
   await waveContract.deployed();
-  console.log("Contract deployed to:", waveContract.address);
+  console.log("Contract Address:", waveContract.address);
   // the address contract is deployed to
   // console.log("Contract deplyoyed by:", owner.address);
   // the address of the person deploying our contract
@@ -25,19 +25,22 @@ const main = async () => {
     );
 
 
-   // doing wave 1
+   // sending wave 1
   const waveTxn = await waveContract.wave("This is wave #1");
+  console.log();
   await waveTxn.wait(); // waiting for transaction to be mined
-  waveTxn.wait();
+  // waveTxn.wait();
+
 
   const [_, randomPerson] = await hre.ethers.getSigners();
 
-  // doing wave 2
+// sending wave 2
   const waveTxn2 = await waveContract.connect(randomPerson).wave("This is wave #2");
   await waveTxn2.wait(); // waiting for 2nd transaction to be mined
   waveTxn2.wait();
 
-
+/*   const waveTxn2 = await waveContract.wave("This is wave #2");
+  await waveTxn2.wait(); */
 
   contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
   console.log(
@@ -60,7 +63,4 @@ const runMain = async () => {
 };
 
 runMain();
-
-
-
 
