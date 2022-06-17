@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const main = async () => {
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
   // compiles the contract and generates ABI files under the artifacts directory
@@ -24,20 +25,26 @@ const main = async () => {
     So that when we call wave(), 0.0001 ETH is removed from the contract */
     );
 
+  const [_, randomPerson] = await hre.ethers.getSigners();
 
    // sending wave 1
-  const waveTxn = await waveContract.wave("This is wave #1");
-  console.log();
+  const waveTxn = await waveContract.connect(_).wave("Waver #1");
+  // console.log();
   await waveTxn.wait(); // waiting for transaction to be mined
   // waveTxn.wait();
 
+     // sending wave 2
+     const waveTxn2 = await waveContract.connect(randomPerson).wave("Waver #2");
+     // console.log();
+     await waveTxn2.wait(); // waiting for transaction to be mined
+     // waveTxn.wait();
 
-  const [_, randomPerson] = await hre.ethers.getSigners();
+
 
 // sending wave 2
-  const waveTxn2 = await waveContract.connect(randomPerson).wave("This is wave #2");
-  await waveTxn2.wait(); // waiting for 2nd transaction to be mined
-  waveTxn2.wait();
+  // const waveTxn2 = await waveContract.connect(randomPerson).wave("This is wave #2");
+  // await waveTxn2.wait(); // waiting for 2nd transaction to be mined
+  // waveTxn2.wait();
 
 /*   const waveTxn2 = await waveContract.wave("This is wave #2");
   await waveTxn2.wait(); */
