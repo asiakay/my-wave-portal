@@ -26,19 +26,15 @@ contract WavePortal {
 
     constructor() payable {
         console.log("We have been constructed!");
-        /*
-         * Set the initial seed
-         */
-        seed = (block.timestamp + block.difficulty) % 100;
     }
 
-    function wave(string memory _message) public {
+        function wave(string memory _message) public {
         /*
          * We need to make sure the current timestamp is at least 15-minutes bigger than the last timestamp we stored
          */
         require(
-            lastWavedAt[msg.sender] + 5 minutes < block.timestamp,
-            "Wait 5m"
+            lastWavedAt[msg.sender] + 30 seconds < block.timestamp,
+            "Wait 30 seconds"
         );
 
         /*
@@ -47,38 +43,42 @@ contract WavePortal {
         lastWavedAt[msg.sender] = block.timestamp;
 
         totalWaves += 1;
-        console.log("%s has waved with a note. %s", msg.sender, _message);
+        console.log("%s has waved from the address:", _message, msg.sender);
 
 
         waves.push(Wave(msg.sender, _message, block.timestamp));
 
-        /*
-         * Generate a new seed for the next user that sends a wave
-         */
-        seed = (block.difficulty + block.timestamp + seed) % 100;
-        console.log("Randomly generated #: %d", seed);
+        uint256 randomNumber = (block.difficulty + block.timestamp + seed) % 100;
+        console.log("Random # generated: %s", randomNumber);
 
-        if (seed <= 50) {
-            uint256 prizeAmount = 0.0001 ether; 
-            console.log("%s won!", msg.sender);
+        seed = randomNumber;
 
-            // uint256 prizeAmount = 0.0001 ether;
+        if (randomNumber < 50){
+            console.log("%s has won!", msg.sender);
+
+            uint256 prizeAmount = 0.0001 ether;
             require(
-                prizeAmount <= address(this).balance,
-                "Trying to withdraw more money than they contract has."
+                prizeAmount <= address(this).balance, "Trying to withdraw more money than the contract has."
             );
             (bool success, ) = (msg.sender).call{value: prizeAmount}("");
             require(success, "Failed to withdraw money from contract.");
         }
 
         emit NewWave(msg.sender, block.timestamp, _message);
+
     }
 
-    function getAllWaves() public view returns (Wave[] memory) {
+    function getAllWaves() public view returns (Wave[] memory){
         return waves;
     }
 
-    function getTotalWaves() public view returns (uint256) {
+    function getTotalWaves() public view returns (uint256){
         return totalWaves;
     }
+
 }
+
+
+
+
+
